@@ -37,7 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'tasks',
+    'accounts',
     'rest_framework',
+    'rest_framework_simplejwt',
+    'drf_yasg',
+    'mail_templated',
+    
 ]
 
 MIDDLEWARE = [
@@ -55,7 +60,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -121,3 +126,17 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+#custom_user_model
+AUTH_USER_MODEL='accounts.User'
+
+
+#email_configurations
+EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST='smtp4dev'
+EMAIL_PORT=25
+ENAIL_USE_TLS=False
+EMAIL_USE_SSL=False
+EMAIL_HOST_USER=''
+EMAIL_HOST_PASSWORD=''
