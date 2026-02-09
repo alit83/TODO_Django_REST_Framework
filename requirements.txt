@@ -4,3 +4,5 @@ djangorestframework
 djangorestframework-simplejwt
 drf-yasg
 django-mail-templated
+black
+flake8
