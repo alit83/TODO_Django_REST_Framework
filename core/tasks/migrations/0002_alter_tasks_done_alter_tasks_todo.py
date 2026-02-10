@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tasks', '0001_initial'),
+        ("tasks", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='tasks',
-            name='done',
+            model_name="tasks",
+            name="done",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='tasks',
-            name='todo',
+            model_name="tasks",
+            name="todo",
             field=models.TextField(blank=True, null=True),
         ),
     ]

@@ -1,4 +1,10 @@
 django >5.2,<5.3
 python-decouple
+djangorestframework
+djangorestframework-simplejwt
+drf-yasg
+django-mail-templated
+black
+flake8
 pytest
 pytest-django
