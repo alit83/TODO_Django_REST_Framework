@@ -3,8 +3,12 @@ from ...models import Tasks ,Done
 from .serializers import TasksSerializer , DoneSerializer 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 from django.shortcuts import redirect
 class ListApiCreate(generics.GenericAPIView):
+    authentication_classes=[TokenAuthentication]
+    permission_classes =[IsAuthenticated]
     serializer_class = TasksSerializer
     def get(self , request):
         users=request.user
@@ -24,6 +28,7 @@ class ListApiCreate(generics.GenericAPIView):
 
     
 class DoneApiView(generics.DestroyAPIView):
+    permission_classes =[IsAuthenticated]
     serializer_class = TasksSerializer
     queryset = Tasks.objects.all()
     def perform_destroy(self,instance):
@@ -31,5 +36,6 @@ class DoneApiView(generics.DestroyAPIView):
         super().perform_destroy(instance)
 
 class DeleteApiView(generics.DestroyAPIView):
+    permission_classes =[IsAuthenticated]
     serializer_class = TasksSerializer
     queryset = Tasks.objects.all()
