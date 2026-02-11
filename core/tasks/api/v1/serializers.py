@@ -13,11 +13,11 @@ class TasksSerializer(serializers.ModelSerializer):
 
     def get_done_url(self, obj):
         request = self.context.get("request")
-        return reverse("tasks:done", kwargs={"pk": obj.id}, request=request)
+        return reverse("tasks:todo:done", kwargs={"pk": obj.id}, request=request)
 
     def get_delete_url(self, obj):
         request = self.context.get("request")
-        return reverse("tasks:delete", kwargs={"pk": obj.id}, request=request)
+        return reverse("tasks:todo:delete", kwargs={"pk": obj.id}, request=request)
 
     def create(self, validated_data):
         validated_data["user"] = (self.context.get("request")).user

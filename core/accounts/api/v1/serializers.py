@@ -1,7 +1,9 @@
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 from django.contrib.auth.password_validation import validate_password
 from accounts.models import User
 from django.core import exceptions
+from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
@@ -32,7 +34,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         validated_date = super().validate(attrs)
         if not self.user.is_verified:
-            raise serializers.ValidationError({"details": "user is not verified"})
+            raise PermissionDenied({"details": "user is not verified"})
         validated_date["user_id"] = self.user.id
         return validated_date
 
@@ -40,6 +42,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class ForgertPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=100, write_only=True)
 
+
+class VerifyEmailResendSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=100)
 
 class PasswordResetSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=255, write_only=True)

@@ -9,11 +9,10 @@ from django.shortcuts import redirect
 
 
 class ListApiCreate(generics.GenericAPIView):
-    authentication_classes=[TokenAuthentication]
     permission_classes =[IsAuthenticated]
     serializer_class = TasksSerializer
 
-    def get(self, request):
+    def get(self, request , *args , **kwargs):
         users = request.user
         tasks = Tasks.objects.filter(user=users)
         dones = Done.objects.filter(user=users)

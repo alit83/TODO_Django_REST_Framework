@@ -140,3 +140,14 @@ ENAIL_USE_TLS = False
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = ""
 EMAIL_HOST_PASSWORD = ""
+
+# for_testing_pytest
+SWAGGER_USE_COMPAT_RENDERERS = False
+
+
+# restframework_settings
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES' :[
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
+}
