@@ -5,6 +5,8 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
+app_name='accounts'
+
 urlpatterns = [
     path("registration/", views.SignUpApiView.as_view(), name="signup"),
     path("jwt/login/", views.LoginApiView.as_view(), name="login"),
