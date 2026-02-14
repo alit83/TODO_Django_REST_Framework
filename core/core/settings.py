@@ -151,3 +151,20 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
+
+# ALLOWED_HOSTS = [
+#     'backend',
+  
+# ]
+
+#celery configs
+CELERY_BROKER_URL = 'redis://redis:6379/1'
+
+#celery_beat_for_deleting_done
+from celery.schedules import crontab
+CELERY_BEAT_SCHEDULE = {
+    'deleting_done_objects': {
+        'task': 'accounts.tasks.delete_all_finished_task_every_week',
+        'schedule': crontab(day_of_week=0, hour=0, minute=0),
+    }
+}
