@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'corsheaders',
     "tasks",
     "accounts",
     "rest_framework",
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+     'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -60,7 +62,7 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["templates"],
+        "DIRS": [BASE_DIR / 'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -121,6 +123,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
+MEDIA_URL = 'media/'
+
+STATIC_ROOT = BASE_DIR / 'static'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'staticfiles'
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -160,11 +171,40 @@ REST_FRAMEWORK = {
 #celery configs
 CELERY_BROKER_URL = 'redis://redis:6379/1'
 
-#celery_beat_for_deleting_done
-from celery.schedules import crontab
-CELERY_BEAT_SCHEDULE = {
-    'deleting_done_objects': {
-        'task': 'accounts.tasks.delete_all_finished_task_every_week',
-        'schedule': crontab(day_of_week=0, hour=0, minute=0),
+# #celery_beat_for_deleting_done
+# from celery.schedules import crontab
+# CELERY_BEAT_SCHEDULE = {
+#     'deleting_done_objects': {
+#         'task': 'accounts.tasks.delete_all_finished_task_every_week',
+#         'schedule': crontab(day_of_week=0, hour=0, minute=0),
+#     }
+# }
+
+#caching configs
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
+}
+
+
+
+LOGIN_URL = "/accounts/login/"
+
+#just on development
+CORS_ALLOW_ALL_ORIGINS = True 
+CORS_ALLOW_CREDENTIALS = True
+
+
+from datetime import timedelta
+# jwt config
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,  
+    'BLACKLIST_AFTER_ROTATION': True,
 }

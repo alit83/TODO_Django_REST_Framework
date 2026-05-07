@@ -10,3 +10,6 @@ pytest
 pytest-django
 celery
 redis
+requests
+django_redis
+django-cors-headers

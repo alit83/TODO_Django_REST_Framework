@@ -18,6 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import permissions
+from django.http import HttpResponseRedirect
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -35,9 +36,13 @@ schema_view = get_schema_view(
 )
 
 
+def redirect_to_app(request):
+    return HttpResponseRedirect('tasks/')
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("tasks/", include("tasks.urls")),
+    path('',redirect_to_app,name='index'),
     path("accounts/", include("accounts.urls")),
     path(
         "swagger/",

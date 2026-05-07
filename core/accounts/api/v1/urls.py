@@ -5,12 +5,12 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-app_name='accounts'
+app_name='api-v1'
 
 urlpatterns = [
     path("registration/", views.SignUpApiView.as_view(), name="signup"),
     path("jwt/login/", views.LoginApiView.as_view(), name="login"),
-    path("jwt/refresh-token", TokenRefreshView.as_view(), name="refresh-token"),
+    path("jwt/refresh-token/", TokenRefreshView.as_view(), name="refresh-token"),
     path("jwt/verify/", TokenVerifyView.as_view(), name="verify-token"),
     path(
         "verify-email/<uidb64>/<token>/",

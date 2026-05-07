@@ -5,6 +5,6 @@ app_name='tasks'
 
 urlpatterns=[
     path('api/v1/',include('tasks.api.v1.urls')),
-    path('test/',views.testview,name='test')
+    path('',views.IndexView.as_view(),name='index')
 ]
        
