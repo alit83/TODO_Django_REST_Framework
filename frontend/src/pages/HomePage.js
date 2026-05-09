@@ -22,7 +22,11 @@ const HomePage = () => {
         console.log(data)
         if(response.status === 200){
             setTasks(data.TASKS)
-        } else if(response.statusText === 'Unauthorized'){
+        }
+        else if (response.status === 401) {
+                // Unauthorized - token expired or invalid
+                logoutUser()}
+        else if(response.statusText === 'Unauthorized'){
             logoutUser()
         }
     }

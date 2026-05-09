@@ -1,0 +1,6 @@
+src/assets/vendor/**
+**/*.min.js
+**/*.min.css
+node_modules/**
+build/**
+public/**
