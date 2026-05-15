@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 
 
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'font-awesome/css/font-awesome.min.css';
 import '../assets/vendor/animate/animate.css';
@@ -11,29 +10,34 @@ import '../assets/css/util.css';
 import '../assets/css/main2.css';
 
 import { useAuth } from '../context/AuthContext.js';
-import { useNavigate } from 'react-router-dom';
 import 'jquery';
 import 'popper.js';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import '../assets/vendor/select2/select2.min.js';
 import '../assets/vendor/tilt/tilt.jquery.min.js';
-const LoginPage = () => {
-    const { loginUser } = useAuth(); // Use useAuth hook
+import { useNavigate } from 'react-router-dom';
+
+
+const SignUpPage = () => {
     const navigate = useNavigate();
+    const { registerUser } = useAuth();
     
-    let handleSubmit = async (e) => {
+    let signup = async (e) => {
         e.preventDefault()
+        const success = await registerUser(
+            e.target.email.value,
+            e.target.password.value,
+            e.target.password1.value
+        );
         
-        const email = e.target.email.value;
-        const password = e.target.password.value;
-        
-        // Call loginUser with email and password
-        const success = await loginUser(email, password);
-        
-        if (success) {
-            console.log('Login successful');
+        if(success){
+            console.log('User registered and logged in successfully');
+            // navigate is handled inside registerUser -> loginUser
         }
     }
+    
+    // ... rest of your component
+
 
     return (
         <div className="limiter">
@@ -43,10 +47,10 @@ const LoginPage = () => {
                         <img src={require('../assets/img/img-01.png')} alt="IMG" />
                     </div>
 
-                    <form className="login100-form validate-form" onSubmit={handleSubmit}>
+                    <form className="login100-form validate-form" onSubmit={signup}>
                         
                         <span className="login100-form-title">
-                            Member Login
+                            Member registration
                         </span>
 
                         <div className="wrap-input100 validate-input">
@@ -76,33 +80,37 @@ const LoginPage = () => {
                                 <i className="fa fa-lock" aria-hidden="true"></i>
                             </span>
                         </div>
+                         <div className="wrap-input100 validate-input" data-validate="Password is required">
+                            <input 
+                                className="input100" 
+                                type="password" 
+                                name="password1" 
+                                placeholder="confirm Password"
+                                required
+                            />
+                            <span className="focus-input100"></span>
+                            <span className="symbol-input100">
+                                <i className="fa fa-lock" aria-hidden="true"></i>
+                            </span>
+                        </div>
+
 
                         <div className="container-login100-form-btn">
                             <button className="login100-form-btn" type="submit">
-                                Login
+                                signup
                             </button>
                         </div>
+                        <div className="container-login100-form-btn">
 
-                        <div className="text-center p-t-12">
-                            <span className="txt1">
-                                Forgot
-                            </span>
-                            <a className="txt2" href="/forget-password/">
-                                Username / Password?
-                            </a>
-                        </div>
 
-                        <div className="text-center p-t-136">
-                            <a className="txt2" href="/signup/">
-                                Create your Account
-                                <i className="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
-                            </a>
                         </div>
+                   
+                       
                     </form>
                 </div>
             </div>
         </div>
     );
-};
 
-export default LoginPage;
+}
+export default SignUpPage;

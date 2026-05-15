@@ -1,4 +1,4 @@
-import { createContext, useState , useEffect} from 'react'
+import { createContext, useState , useEffect,useContext} from 'react'
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom'
 const AuthContext = createContext()
@@ -13,14 +13,13 @@ export const AuthProvider = ({children}) => {
 
     const navigate = useNavigate()
 
-    let loginUser = async (e) => {
-        e.preventDefault()
+    let loginUser = async (email,password) => {
         const response = await fetch('http://127.0.0.1:8000/accounts/api/v1/jwt/login/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({email: e.target.email.value, password: e.target.password.value })
+            body: JSON.stringify({email, password })
         });
 
         let data = await response.json();
@@ -29,6 +28,7 @@ export const AuthProvider = ({children}) => {
             localStorage.setItem('authTokens', JSON.stringify(data));
             setAuthTokens(data)
             setUser(jwtDecode(data.access))
+            setLoading(false)
             navigate('/')
         } else {
             alert('Something went wrong while logging in the user!')
@@ -42,7 +42,23 @@ export const AuthProvider = ({children}) => {
     setUser(null)
     navigate('/login')
     }
-
+    let registerUser = async (email, password, password1) => {
+        const response = await fetch('http://127.0.0.1:8000/accounts/api/v1/registration/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password, password1 })
+        });
+        
+        if(response.status === 201){
+            // Auto-login after successful registration
+            console.log('tst');
+            
+            return await loginUser(email, password);
+        }
+        return false;
+    }
     const updateToken = async () => {
         const response = await fetch('http://127.0.0.1:8000/accounts/api/v1/jwt/refresh-token/', {
             method: 'POST',
@@ -67,12 +83,7 @@ export const AuthProvider = ({children}) => {
         }
     }
 
-    let contextData = {
-        user: user,
-        authTokens: authTokens,
-        loginUser: loginUser,
-        logoutUser: logoutUser,
-    }
+
 
     useEffect(()=>{
 
@@ -87,8 +98,9 @@ export const AuthProvider = ({children}) => {
     },[authTokens , loading])
 
     return(
-        <AuthContext.Provider value={contextData}>
+        <AuthContext.Provider value={{ user, authTokens, loginUser, registerUser, loading }}>
             {children}
         </AuthContext.Provider>
     )
 }
+export const useAuth = () => useContext(AuthContext);
