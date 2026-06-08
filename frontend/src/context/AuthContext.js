@@ -4,15 +4,40 @@ import { useNavigate } from 'react-router-dom'
 const AuthContext = createContext()
 
 export default AuthContext;
+    const checkServerStatus = async () => {
+        try {
+            
+             const authTokens = JSON.parse(localStorage.getItem('authTokens'))
 
+             
+          await fetch('http://127.0.0.1:8000/accounts/api/v1/jwt/verify/', { method: 'POST',
+            headers: {
+                'Content-Type':'application/json'
+            },
+            
+            body:JSON.stringify({token:String(authTokens.access)}) });
+        } catch (error) {
+          
+          localStorage.removeItem('authTokens');
+          localStorage.removeItem('email');
+          
+          // Server unavailable - clear everything
+
+    
+        }
+      };
+      
 export const AuthProvider = ({children}) => {
-
+    checkServerStatus();
     let [user, setUser] = useState(() => (localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens')) : null))
+    let [email, setEmail] = useState(() => localStorage.getItem('email') || null);
     let [authTokens, setAuthTokens] = useState(() => (localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null))
-    let [loading, setLoading] = useState(true)
+    let [loading, setLoading] = useState(false)
 
     const navigate = useNavigate()
 
+      
+      
     let loginUser = async (email,password) => {
         const response = await fetch('http://127.0.0.1:8000/accounts/api/v1/jwt/login/', {
             method: 'POST',
@@ -28,14 +53,21 @@ export const AuthProvider = ({children}) => {
             localStorage.setItem('authTokens', JSON.stringify(data));
             setAuthTokens(data)
             setUser(jwtDecode(data.access))
-            setLoading(false)
-            navigate('/')
+            setEmail(data.email)
+            if(data.is_verified ==false) {
+            setLoading(false);
+            navigate('/verify');
+        } else {
+            setLoading(false);
+            navigate('/');
+        }
         } else {
             alert('Something went wrong while logging in the user!')
         }
     }
 
     let logoutUser = (e) => {
+    
     e.preventDefault()
     localStorage.removeItem('authTokens')
     setAuthTokens(null)
@@ -96,9 +128,9 @@ export const AuthProvider = ({children}) => {
         return () => clearInterval(interval)
 
     },[authTokens , loading])
-
+    
     return(
-        <AuthContext.Provider value={{ user, authTokens, loginUser, registerUser, loading }}>
+        <AuthContext.Provider value={{ user, authTokens, loginUser, registerUser, loading ,email }}>
             {children}
         </AuthContext.Provider>
     )

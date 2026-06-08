@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-
+import AuthContext from '../context/AuthContext.js';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'font-awesome/css/font-awesome.min.css';
@@ -20,15 +20,20 @@ import { useNavigate } from 'react-router-dom';
 
 
 const VerifyEmailPage = () => {
+    const { email } = useContext(AuthContext);
     const navigate = useNavigate();
      let verifyemail = async (e) => {
         e.preventDefault()
+        console.log(email);
+        console.log('tets');
+        
+        
         let response = await fetch('http://127.0.0.1:8000/accounts/api/v1/verify-email-resend/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({email: e.target.email.value, password: e.target.password.value,password1: e.target.password1.value })
+            body: JSON.stringify({email:email })
         });
 
     }

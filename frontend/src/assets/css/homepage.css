@@ -430,6 +430,8 @@ body {
   color: #8da0b5;
 }
 
+.bi-trash::before { content: "\f5de"; }
+
 /* ===== DARKER THEME OVERRIDES ===== */
 body.darker-theme-active {
   background: #11161f;
@@ -439,6 +441,7 @@ body.darker-theme-active .todo-container {
   background: #1f2a3e;
   color: #e2e8f0;
 }
+
 
 body.darker-theme-active .task-item {
   background: #2a3649;

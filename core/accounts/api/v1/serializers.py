@@ -33,9 +33,8 @@ class SignUpApiserializer(serializers.ModelSerializer):
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         validated_date = super().validate(attrs)
-        if not self.user.is_verified:
-            raise PermissionDenied({"details": "user is not verified"})
-        validated_date["user_id"] = self.user.id
+        validated_date["email"] = self.user.email
+        validated_date['is_verify'] = self.user.is_verified
         return validated_date
 
 

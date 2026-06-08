@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import AuthContext from '../context/AuthContext';
 import '../assets/css/homepage.css';
+import '../assets/vendor/bootstrap-icons/font/bootstrap-icons.css';
 
 const HomePage = () => {
     const { authTokens, logoutUser, loading } = useContext(AuthContext);
@@ -11,9 +12,13 @@ const HomePage = () => {
     const [currentTheme, setCurrentTheme] = useState('standard');
     const [currentTime, setCurrentTime] = useState('');
 
-    
+    // Check on every app initialization
+
+
+
 
     useEffect(() => {
+      
         gettodo();
     }, []);
 
@@ -173,11 +178,7 @@ const HomePage = () => {
     return { total, pending };
   };
    const { total, pending } = getTaskStats();
-     const clearCompleted = () => {
-    const pendingTasks = tasks.filter(task => !task.done);
-    setTasks(pendingTasks);
 
-  };
     return (
     <div className="todo-container">
       {/* Header Section */}
@@ -202,9 +203,7 @@ const HomePage = () => {
             <h1 className="main-title">Just do it.</h1>
             <div className="title-border" />
           </div>
-          <div className="npm-badge">
-            <i className="fab fa-npm"></i> npm install productivity
-          </div>
+
         </div>
       </div>
 
@@ -269,7 +268,7 @@ const HomePage = () => {
                 
                 <div className="action-buttons">
                   <button
-                    className="icon-btn check-btn"
+                    className=" bi-check-lg icon-btn"
                     onClick={(e) => DoneTodo(e, task.id)}
                     title={task.done ? 'Mark incomplete' : 'Mark done'}
                   >
@@ -277,7 +276,7 @@ const HomePage = () => {
                   </button>
                   
                   <button
-                    className="icon-btn delete-btn"
+                    className="bi-trash"
                     onClick={(e) => DeleteTodo(e, task.id)}
                     title="Delete task"
                   >
@@ -294,13 +293,7 @@ const HomePage = () => {
       <div className="footer-actions">
         <hr className="divider" />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button 
-            className="clear-btn" 
-            onClick={clearCompleted}
-            disabled={!tasks.some(t => t.done)}
-          >
-            <i className="far fa-trash-alt"></i> Clear completed
-          </button>
+
         </div>
       </div>
 
@@ -318,9 +311,7 @@ const HomePage = () => {
         </svg>
       </a>
 
-      <div className="footer-note">
-        <span>✨ npm-inspired Todo — local storage keeps your tasks safe</span>
-      </div>
+
     </div>
   );
 }

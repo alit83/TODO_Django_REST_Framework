@@ -8,7 +8,7 @@ import ForgetPasswordPage from './pages/ForgetPasswordPage'
 import Header from './components/Header'
 import PrivateRoute from './utils/PrivateRoute'
 import { AuthProvider } from './context/AuthContext'
-
+import ChangePasswordPage from './pages/ChangePasswordPage'
 function App() {
     return (
         <div className="App">
@@ -21,6 +21,7 @@ function App() {
                     <Route path="/signup" element={<SignUpPage/>}/>
                     <Route path="/verify" element={<VerifyEmailPage/>}/>
                     <Route path="/forget-password" element={<ForgetPasswordPage/>}/>
+                    <Route path="/verify-email/:uidb64/:token/" element={<ChangePasswordPage/>}/>
                 </Routes>
                 </AuthProvider>
             </Router>

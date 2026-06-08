@@ -13,7 +13,7 @@ from .serializers import (
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils import timezone
 from mail_templated import EmailMessage
-from accounts.tasks import send_email
+from accounts.tasks import send_email , send_forget_password_email
 from .permissions import OnlyUnAuthenticated
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
@@ -100,14 +100,8 @@ class VerifyEmailResendView(generics.GenericAPIView):
         EmailVerifyToken.objects.create(user=user_obj,token_hash=token_hash)
         uidb64 = urlsafe_base64_encode(force_bytes(user_obj.pk))
         data = {"email": email}
-        message = EmailMessage(
-            "email/email-verification.tpl",
-            {"token": token_hash, "uidb64": uidb64},
-            "todo@todo.com",
-            to=[email],
-        )
+        send_email.delay(email,token_hash,uidb64)
 
-        VerificationThread(message).start()
         return Response(data, status=status.HTTP_201_CREATED)
         
 
@@ -133,15 +127,7 @@ class ForgetPasswordView(generics.GenericAPIView):
             )
         token = token_generator.make_token(user_obj)
         uidb64 = urlsafe_base64_encode(force_bytes(user_obj.pk))
-        message = EmailMessage(
-            "email/email-forget-password.tpl",
-            {"token": token, "uidb64": uidb64},
-            "todo@todo.com",
-            to=[email],
-        )
-
-        
-        send_email.delay(message)
+        send_forget_password_email.delay(email,token,uidb64)
         return Response(
             {"details": "check your email. a password recovery email has been sent"},
             status=status.HTTP_200_OK,
