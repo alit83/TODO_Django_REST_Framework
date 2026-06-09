@@ -1,6 +1,12 @@
 import { createContext, useState , useEffect,useContext} from 'react'
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom'
+
+const isTokenExpired = (token) => {
+    const decoded = jwtDecode(token);
+    return decoded.exp * 1000 < Date.now();
+};
+
 const AuthContext = createContext()
 
 export default AuthContext;
@@ -28,7 +34,9 @@ export default AuthContext;
       };
       
 export const AuthProvider = ({children}) => {
+    useEffect(() => {
     checkServerStatus();
+}, []);
     let [user, setUser] = useState(() => {
     try {
         const tokens = JSON.parse(localStorage.getItem('authTokens'));
@@ -79,14 +87,17 @@ export const AuthProvider = ({children}) => {
         }
     }
 
-    let logoutUser = (e) => {
+    let logoutUser = () => {
     
-    e.preventDefault()
-    localStorage.removeItem('authTokens')
-    setAuthTokens(null)
-    setUser(null)
-    navigate('/login')
-    }
+    localStorage.removeItem('authTokens');
+    localStorage.removeItem('email');
+
+    setAuthTokens(null);
+    setUser(null);
+    setEmail(null);
+
+    navigate('/login');
+}
     let registerUser = async (email, password, password1) => {
         const response = await fetch('http://127.0.0.1:8000/accounts/api/v1/registration/', {
             method: 'POST',
@@ -120,6 +131,7 @@ export const AuthProvider = ({children}) => {
             setUser(jwtDecode(data.access))
             localStorage.setItem('authTokens',JSON.stringify(data))
         } else {
+            console.log(response)
             logoutUser()
         }
 
@@ -130,20 +142,15 @@ export const AuthProvider = ({children}) => {
 
 
 
-    useEffect(()=>{
-
-        const REFRESH_INTERVAL = 1000 * 60 * 10 // 10 minutes
-        let interval = setInterval(()=>{
-            if(authTokens){
-                updateToken()
-            }
-        }, REFRESH_INTERVAL)
-        return () => clearInterval(interval)
-
-    },[authTokens , loading])
-    
+   useEffect(() => {
+    if (authTokens?.access) {
+        if (isTokenExpired(authTokens.access)) {
+            updateToken();
+        }
+    }
+}, []);
     return(
-        <AuthContext.Provider value={{ user, authTokens, loginUser, registerUser, loading ,email }}>
+        <AuthContext.Provider value={{ user, authTokens, loginUser, registerUser, loading ,email , logoutUser }}>
             {children}
         </AuthContext.Provider>
     )

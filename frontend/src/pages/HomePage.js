@@ -21,7 +21,14 @@ const HomePage = () => {
       
         gettodo();
     }, []);
+    useEffect(() => {
+    const savedTheme = localStorage.getItem('npm_todo_theme');
 
+    if (savedTheme) {
+        setCurrentTheme(savedTheme);
+        applyTheme(savedTheme);
+    }
+}, []);
     const gettodo = async() => {
         try {
             let response = await fetch('http://127.0.0.1:8000/tasks/api/v1/tasks/', {
