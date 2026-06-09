@@ -19,6 +19,17 @@ services:
         - DEBUG=True
      depends_on:
          - redis
+  frontend:
+   build:
+     context: ./frontend
+   volumes:
+    - ./frontend:/app
+   ports:
+     - "3000:3000"
+   command: npm run start
+   depends_on:
+      - backend
+   
   worker:
      build: .
      command: celery -A core worker --loglevel warning

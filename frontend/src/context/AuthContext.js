@@ -29,7 +29,20 @@ export default AuthContext;
       
 export const AuthProvider = ({children}) => {
     checkServerStatus();
-    let [user, setUser] = useState(() => (localStorage.getItem('authTokens') ? jwtDecode(localStorage.getItem('authTokens')) : null))
+    let [user, setUser] = useState(() => {
+    try {
+        const tokens = JSON.parse(localStorage.getItem('authTokens'));
+
+        if (!tokens?.access) {
+            return null;
+        }
+
+        return jwtDecode(tokens.access);
+    } catch (err) {
+        localStorage.removeItem('authTokens');
+        return null;
+    }
+});
     let [email, setEmail] = useState(() => localStorage.getItem('email') || null);
     let [authTokens, setAuthTokens] = useState(() => (localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null))
     let [loading, setLoading] = useState(false)
@@ -47,9 +60,9 @@ export const AuthProvider = ({children}) => {
             body: JSON.stringify({email, password })
         });
 
-        let data = await response.json();
+        const data = await response.json();
 
-        if(data){
+        if(response.ok){
             localStorage.setItem('authTokens', JSON.stringify(data));
             setAuthTokens(data)
             setUser(jwtDecode(data.access))
