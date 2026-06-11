@@ -52,6 +52,7 @@ export const AuthProvider = ({children}) => {
     }
 });
     let [email, setEmail] = useState(() => localStorage.getItem('email') || null);
+    let [is_verify, setIs_verify] = useState(() => localStorage.getItem('is_verify') || null);
     let [authTokens, setAuthTokens] = useState(() => (localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null))
     let [loading, setLoading] = useState(false)
 
@@ -75,7 +76,10 @@ export const AuthProvider = ({children}) => {
             setAuthTokens(data)
             setUser(jwtDecode(data.access))
             setEmail(data.email)
-            if(data.is_verified ==false) {
+            setIs_verify(data.is_verify)
+            console.log(user,authTokens);
+            
+            if(data.is_verify ==false) {
             setLoading(false);
             navigate('/verify');
         } else {
@@ -150,7 +154,7 @@ export const AuthProvider = ({children}) => {
     }
 }, []);
     return(
-        <AuthContext.Provider value={{ user, authTokens, loginUser, registerUser, loading ,email , logoutUser }}>
+        <AuthContext.Provider value={{ user, authTokens, loginUser, registerUser, loading ,email , logoutUser ,is_verify}}>
             {children}
         </AuthContext.Provider>
     )
