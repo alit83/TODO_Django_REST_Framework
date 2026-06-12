@@ -21,9 +21,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY' , default='test')
+SECRET_KEY = config("SECRET_KEY", default="test")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG',cast=bool , default=True)
+DEBUG = config("DEBUG", cast=bool, default=True)
 
 # ALLOWED_HOSTS = config('ALLOWED_HOSTS',cast=lambda v:[s.strip() for s in v.split(',')])
 ALLOWED_HOSTS = []
@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'corsheaders',
+    "corsheaders",
     "tasks",
     "accounts",
     "rest_framework",
@@ -47,7 +47,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-     'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -62,7 +62,7 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates'],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -123,14 +123,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
-MEDIA_URL = 'media/'
+MEDIA_URL = "media/"
 
-STATIC_ROOT = BASE_DIR / 'static'
-MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_ROOT = BASE_DIR / "static"
+MEDIA_ROOT = BASE_DIR / "media"
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'staticfiles'
-]
+STATICFILES_DIRS = [BASE_DIR / "staticfiles"]
 
 
 # Default primary key field type
@@ -158,53 +156,53 @@ SWAGGER_USE_COMPAT_RENDERERS = False
 
 # restframework_settings
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES' :[
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ]
 }
 
 # ALLOWED_HOSTS = [
 #     'backend',
-  
+
 # ]
 
-#celery configs
-CELERY_BROKER_URL = 'redis://redis:6379/1'
+# celery configs
+CELERY_BROKER_URL = "redis://redis:6379/1"
 
-# #celery_beat_for_deleting_done
+# celery_beat_for_deleting_finished_tasks
 # from celery.schedules import crontab
 # CELERY_BEAT_SCHEDULE = {
 #     'deleting_done_objects': {
-#         'task': 'accounts.tasks.delete_all_finished_task_every_week',
+#         'task': 'accounts.tasks.delete_all_the_finished_tasks',
 #         'schedule': crontab(day_of_week=0, hour=0, minute=0),
 #     }
 # }
 
-#caching configs
+# caching configs
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://redis:6379/2",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
+        },
     }
 }
 
 
-
 LOGIN_URL = "/accounts/login/"
 
-#just on development
-CORS_ALLOW_ALL_ORIGINS = True 
+# just on development
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 
 from datetime import timedelta
+
 # jwt config
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,  
-    'BLACKLIST_AFTER_ROTATION': True,
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
 }

@@ -12,15 +12,14 @@ from .serializers import (
 )
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils import timezone
-from mail_templated import EmailMessage
-from accounts.tasks import send_email , send_forget_password_email
+from accounts.tasks import send_email, send_forget_password_email
 from .permissions import OnlyUnAuthenticated
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from accounts.models import User , EmailVerifyToken
+from accounts.models import User, EmailVerifyToken
 import secrets
 from hashlib import sha256
-from datetime import datetime
+
 
 class CustomTokenGenerator(PasswordResetTokenGenerator):
     pass
@@ -31,7 +30,7 @@ token_generator = CustomTokenGenerator()
 
 
 class SignUpApiView(generics.GenericAPIView):
-    permission_classes=[OnlyUnAuthenticated]
+    permission_classes = [OnlyUnAuthenticated]
     serializer_class = SignUpApiserializer
 
     def post(self, request, *args, **kwargs):
@@ -39,24 +38,23 @@ class SignUpApiView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user_obj = serializer.save()
         email = user_obj.email
-        raw_token=secrets.token_urlsafe(32)
-        token_hash=sha256(raw_token.encode()).hexdigest()
-        EmailVerifyToken.objects.create(user=user_obj,token_hash=token_hash)
+        raw_token = secrets.token_urlsafe(32)
+        token_hash = sha256(raw_token.encode()).hexdigest()
+        EmailVerifyToken.objects.create(user=user_obj, token_hash=token_hash)
         uidb64 = urlsafe_base64_encode(force_bytes(user_obj.pk))
         data = {"email": email}
-        
 
-        send_email.delay(email,token_hash,uidb64)
+        send_email.delay(email, token_hash, uidb64)
         return Response(data, status=status.HTTP_201_CREATED)
 
 
 class LoginApiView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
-    
 
 
 class VerifyEmailView(APIView):
-    permission_classes=[OnlyUnAuthenticated]
+    permission_classes = [OnlyUnAuthenticated]
+
     def get(self, request, token, uidb64, *args, **kwargs):
         try:
             user_id = force_str(urlsafe_base64_decode(uidb64))
@@ -67,49 +65,55 @@ class VerifyEmailView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         try:
-                token_obj = EmailVerifyToken.objects.select_for_update().get(user=user_id , 
-                                token_hash=token , used_at__isnull=True)
-        except (EmailVerifyToken.DoesNotExist , ValueError):
+            token_obj = EmailVerifyToken.objects.select_for_update().get(
+                user=user_id, token_hash=token, used_at__isnull=True
+            )
+        except (EmailVerifyToken.DoesNotExist, ValueError):
             return Response(
                 {"details": "your verification link is no longer valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-            
+
         token_obj.used_at = timezone.now()
         token_obj.save()
         user_obj.is_verified = True
         user_obj.save()
         return Response(
-                {"details": "your email has been verified."}, status=status.HTTP_200_OK
-            )
-    
+            {"details": "your email has been verified."},
+            status=status.HTTP_200_OK,
+        )
+
+
 class VerifyEmailResendView(generics.GenericAPIView):
-    permission_classes=[OnlyUnAuthenticated]
-    serializer_class=VerifyEmailResendSerializer
-    def post(self,request,*args,**kwargs):
-        serializer=self.serializer_class(data=request.data)
+    permission_classes = [OnlyUnAuthenticated]
+    serializer_class = VerifyEmailResendSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        email = serializer.validated_data['email']
+        email = serializer.validated_data["email"]
         try:
-            EmailVerifyToken.objects.filter(user__email=email , used_at=None).update(used_at=timezone.now())
-            user_obj=User.objects.get(email=email , is_verified=False)
-        except (EmailVerifyToken.DoesNotExist , User.DoesNotExist ):
-            return Response({'details': 'verfication email has been sent.'}, status=status.HTTP_200_OK)
-        raw_token=secrets.token_urlsafe(32)
-        token_hash=sha256(raw_token.encode()).hexdigest()
-        EmailVerifyToken.objects.create(user=user_obj,token_hash=token_hash)
+            EmailVerifyToken.objects.filter(
+                user__email=email, used_at=None
+            ).update(used_at=timezone.now())
+            user_obj = User.objects.get(email=email, is_verified=False)
+        except (EmailVerifyToken.DoesNotExist, User.DoesNotExist):
+            return Response(
+                {"details": "verfication email has been sent."},
+                status=status.HTTP_200_OK,
+            )
+        raw_token = secrets.token_urlsafe(32)
+        token_hash = sha256(raw_token.encode()).hexdigest()
+        EmailVerifyToken.objects.create(user=user_obj, token_hash=token_hash)
         uidb64 = urlsafe_base64_encode(force_bytes(user_obj.pk))
         data = {"email": email}
-        send_email.delay(email,token_hash,uidb64)
+        send_email.delay(email, token_hash, uidb64)
 
         return Response(data, status=status.HTTP_201_CREATED)
-        
-
-            
 
 
 class ForgetPasswordView(generics.GenericAPIView):
-    permission_classes=[OnlyUnAuthenticated]
+    permission_classes = [OnlyUnAuthenticated]
     serializer_class = ForgertPasswordSerializer
 
     def post(self, request, *args, **kwargs):
@@ -121,21 +125,25 @@ class ForgetPasswordView(generics.GenericAPIView):
         except User.DoesNotExist:
             return Response(
                 {
-                    "details": "check your email. a password recovery email has been sent"
+                    "details": "check your email."
+                    " a password recovery email has been sent"
                 },
                 status=status.HTTP_200_OK,
             )
         token = token_generator.make_token(user_obj)
         uidb64 = urlsafe_base64_encode(force_bytes(user_obj.pk))
-        send_forget_password_email.delay(email,token,uidb64)
+        send_forget_password_email.delay(email, token, uidb64)
         return Response(
-            {"details": "check your email. a password recovery email has been sent"},
+            {
+                "details": "check your email."
+                " a password recovery email has been sent"
+            },
             status=status.HTTP_200_OK,
         )
 
 
 class PasswordResetView(generics.GenericAPIView):
-    permission_classes=[OnlyUnAuthenticated]
+    permission_classes = [OnlyUnAuthenticated]
     serializer_class = PasswordResetSerializer
 
     def get(self, request, token, uidb64, *args, **kwargs):
@@ -153,7 +161,9 @@ class PasswordResetView(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        return Response({"details": "link is valid"}, status=status.HTTP_200_OK)
+        return Response(
+            {"details": "link is valid"}, status=status.HTTP_200_OK
+        )
 
     def post(self, request, token, uidb64, *args, **kwargs):
         try:

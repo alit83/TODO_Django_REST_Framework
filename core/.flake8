@@ -10,3 +10,4 @@ exclude =
     .env,
     settings.py,
     __init__,
+    *_initial.py,

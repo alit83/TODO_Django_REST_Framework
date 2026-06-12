@@ -37,17 +37,22 @@ schema_view = get_schema_view(
 
 
 def redirect_to_app(request):
-    return HttpResponseRedirect('tasks/')
+    return HttpResponseRedirect("tasks/")
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("tasks/", include("tasks.urls")),
-    path('',redirect_to_app,name='index'),
+    path("", redirect_to_app, name="index"),
     path("accounts/", include("accounts.urls")),
     path(
         "swagger/",
         schema_view.with_ui("swagger", cache_timeout=0),
         name="schema-swagger-ui",
     ),
-    path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    path(
+        "redoc/",
+        schema_view.with_ui("redoc", cache_timeout=0),
+        name="schema-redoc",
+    ),
 ]
